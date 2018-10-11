@@ -1,3 +1,6 @@
+build/*
+!.gitkeep
+
 # Prerequisites
 *.d
 
