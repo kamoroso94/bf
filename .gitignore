@@ -1,6 +1,7 @@
 build/*
 !.gitkeep
 core
+bf
 
 # Prerequisites
 *.d
