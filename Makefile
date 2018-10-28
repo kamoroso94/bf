@@ -4,8 +4,11 @@ CC = gcc
 default: all
 all: bf
 
-bf: build/bf.o build/stack.o
-	$(CC) -o bf build/bf.o build/stack.o
+bf: build/main.o build/bf.o build/stack.o
+	$(CC) -o bf build/main.o build/bf.o build/stack.o
+
+build/main.o: src/main.c src/bf.h
+	$(CC) -o build/main.o -c src/main.c
 
 build/bf.o: src/bf.c src/bf.h src/stack.h
 	$(CC) -o build/bf.o -c src/bf.c
