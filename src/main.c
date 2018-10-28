@@ -17,6 +17,9 @@ struct bf_params {
 
 static void print_usage(const char *prgm_name);
 static int parse_args(int argc, char **argv, struct bf_params *params);
+static int parse_d_arg(int *flags, struct bf_params *params);
+static int parse_m_arg(int *flags, struct bf_params *params);
+static int parse_src_arg(char **argv, struct bf_params *params);
 
 int main(int argc, char *argv[]) {
   int result, exit_code;
@@ -85,11 +88,8 @@ static void print_usage(const char *prgm_name) {
 // parse command line arguments
 // returns 0 on error
 static int parse_args(int argc, char **argv, struct bf_params *params) {
-  int opt;
+  int opt, result;
   int flags = 0;
-  const int D_FLAG = 0x1;
-  const int M_FLAG = 0x2;
-  mode_t mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP;
 
   if(argc < 2) {
     print_usage(argv[0]);
@@ -99,32 +99,68 @@ static int parse_args(int argc, char **argv, struct bf_params *params) {
   params->mem_size = BF_DEFAULT_MEMORY;
   params->dump_fd = -1;
 
+  // parse command line flags
   while((opt = getopt(argc, argv, "d:m:")) != -1) {
     switch(opt) {
       case 'd':
-      if(flags & D_FLAG) break;
-      flags |= D_FLAG;
-      params->dump_fd = open(optarg, O_WRONLY | O_CREAT | O_TRUNC, mode);
-      if(params->dump_fd == -1) {
-        perror(NULL);
-        return 0;
-      }
+      result = parse_d_arg(&flags, params);
+      if(result == 0) return 0;
+      if(result < 0) break;
       break;
 
       case 'm':
-      if(flags & M_FLAG) break;
-      flags |= M_FLAG;
-      params->mem_size = atoi(optarg);
-      if(params->mem_size <= 0) params->mem_size = BF_DEFAULT_MEMORY;
+      result = parse_m_arg(&flags, params);
+      if(result < 0) break;
       break;
     }
   }
 
+  return parse_src_arg(argv, params);
+}
+
+// open dump file for program memory
+// returns -1 on break, 0 on error, 1 on success
+static int parse_d_arg(int *flags, struct bf_params *params) {
+  const int D_FLAG = 0x1;
+  mode_t mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP;
+
+  if(*flags & D_FLAG) return -1;
+  *flags |= D_FLAG;
+
+  // open dump file
+  params->dump_fd = open(optarg, O_WRONLY | O_CREAT | O_TRUNC, mode);
+  if(params->dump_fd == -1) {
+    perror(NULL);
+    return 0;
+  }
+
+  return 1;
+}
+
+// set program memory size, or default if invalid
+// returns -1 on break, 1 on success
+static int parse_m_arg(int *flags, struct bf_params *params) {
+  const int M_FLAG = 0x2;
+
+  if(*flags & M_FLAG) return -1;
+  *flags |= M_FLAG;
+
+  // set memory size
+  params->mem_size = atoi(optarg);
+  if(params->mem_size <= 0) params->mem_size = BF_DEFAULT_MEMORY;
+
+  return 1;
+}
+
+// opens program source file
+// returns 0 on error
+static int parse_src_arg(char **argv, struct bf_params *params) {
   if(argv[optind] == NULL) {
     print_usage(argv[0]);
     return 0;
   }
 
+  // open source file
   params->prgm_fd = open(argv[optind], O_RDWR);
   if(params->prgm_fd == -1) {
     if(params->dump_fd != -1) close(params->dump_fd);
