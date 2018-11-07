@@ -16,9 +16,9 @@ static void bf_cmd_right(int *data_ptr, int msize);
 static void bf_cmd_left(int *data_ptr, int msize);
 static void bf_cmd_inc(char *cell);
 static void bf_cmd_dec(char *cell);
-static int bf_cmd_out(char *cell);
+static int bf_cmd_out(char cell);
 static int bf_cmd_in(char *cell);
-static void bf_cmd_lbrac(char *cell, int *token_idx, int *bracket_idx, struct bracket *bracs);
+static void bf_cmd_lbrac(char cell, int *token_idx, int *bracket_idx, struct bracket *bracs);
 static void bf_cmd_rbrac(int *token_idx, int *bracket_idx, struct bracket *bracs);
 
 // similar to strtok, set source string then call with NULL
@@ -177,7 +177,7 @@ int bf_run(char *program, int psize, char *memory, int msize) {
       break;
 
       case '.':
-      if(!bf_cmd_out(memory + data_ptr)) return 0;
+      if(!bf_cmd_out(memory[data_ptr])) return 0;
       break;
 
       case ',':
@@ -185,7 +185,7 @@ int bf_run(char *program, int psize, char *memory, int msize) {
       break;
 
       case '[':
-      bf_cmd_lbrac(memory + data_ptr, &token_idx, &bracket_idx, brac_tbl.buffer);
+      bf_cmd_lbrac(memory[data_ptr], &token_idx, &bracket_idx, brac_tbl.buffer);
       break;
 
       case ']':
@@ -222,8 +222,8 @@ static void bf_cmd_dec(char *cell) {
 
 // output byte at data pointer
 // returns 0 on error
-static int bf_cmd_out(char *cell) {
-  int result = putchar(*cell);
+static int bf_cmd_out(char cell) {
+  int result = putchar(cell);
 
   if(result == EOF) {
     perror(NULL);
@@ -250,10 +250,10 @@ static int bf_cmd_in(char *cell) {
 }
 
 // enter loop or skip
-static void bf_cmd_lbrac(char *cell, int *token_idx, int *bracket_idx, struct bracket *bracs) {
+static void bf_cmd_lbrac(char cell, int *token_idx, int *bracket_idx, struct bracket *bracs) {
   struct bracket *src, *dest;
 
-  if(!*cell) {
+  if(!cell) {
     // skip loop
     src = bracs + *bracket_idx;
     dest = bracs + src->pair_idx;
