@@ -39,6 +39,16 @@ const char *bf_lex(const char *program, int psize) {
   // find next token
   while(i < psize) {
     token = p[i++];
+
+    // skip comments
+    if(token == '#') {
+      while(token != '\n') {
+        if(i == psize) return NULL;
+        token = p[i++];
+      }
+    }
+
+    // return token
     if(strchr("><+-.,[]", token) != NULL) {
       return p + i - 1;
     }
