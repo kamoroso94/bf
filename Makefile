@@ -17,4 +17,4 @@ build/stack.o: src/stack.c src/stack.h
 	$(CC) -o build/stack.o -c src/stack.c
 
 clean:
-	$(RM) build/*.o
+	$(RM) build/*
