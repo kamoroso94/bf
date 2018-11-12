@@ -5,7 +5,7 @@ default: all
 all: bf
 
 bf: build/main.o build/bf.o build/stack.o
-	$(CC) -o bf build/main.o build/bf.o build/stack.o
+	$(CC) -o build/bf build/main.o build/bf.o build/stack.o
 
 build/main.o: src/main.c src/bf.h
 	$(CC) -o build/main.o -c src/main.c
