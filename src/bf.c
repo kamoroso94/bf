@@ -2,7 +2,7 @@
 #include <string.h>
 #include <errno.h>
 #include "bf.h"
-#include "stack.h"
+#include "../lib/src/stack.h"
 
 struct bracket {
   int token_idx;  // index of self in program
