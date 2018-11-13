@@ -1,5 +1,6 @@
 core
 build/*
+lib/build/*
 
 # Prerequisites
 *.d

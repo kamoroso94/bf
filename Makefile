@@ -24,3 +24,5 @@ lib/build/stack.o: lib/src/stack.c lib/src/stack.h
 
 clean:
 	$(RM) $(OBJS) $(LIBOBJS)
+
+.PHONY: default all build clean
