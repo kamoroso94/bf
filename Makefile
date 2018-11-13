@@ -23,6 +23,6 @@ lib/build/stack.o: lib/src/stack.c lib/src/stack.h
 	$(CC) -o $@ -c $<
 
 clean:
-	$(RM) $(OBJS) $(LIBOBJS)
+	$(RM) $(PROG) $(OBJS) $(LIBOBJS)
 
 .PHONY: default all build clean
